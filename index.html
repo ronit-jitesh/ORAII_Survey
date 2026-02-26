@@ -968,7 +968,8 @@
         <div class="step-dot active" id="dot-1"></div>
         <div class="step-dot" id="dot-2"></div>
         <div class="step-dot" id="dot-3"></div>
-        <span class="step-label" id="step-label">Step 1 of 3 — About You</span>
+        <div class="step-dot" id="dot-4"></div>
+        <span class="step-label" id="step-label">Step 1 of 4 — About You</span>
       </div>
 
       <!-- STEP 1 -->
@@ -1062,9 +1063,77 @@
         <button class="btn-form-next" onclick="goToStep(3)">Continue →</button>
       </div>
 
-      <!-- STEP 3 -->
+      <!-- STEP 3: AI & Documentation Insights -->
       <div class="form-step" id="step-3">
         <button class="btn-back" onclick="goToStep(2)">← Back</button>
+        <div class="field-group">
+          <label>How often do you work on notes outside working hours?</label>
+          <div class="radio-grid">
+            <div class="radio-option" onclick="selectRadio(this, 'afterhours')">
+              <div class="radio-check"></div> Never
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'afterhours')">
+              <div class="radio-check"></div> Sometimes
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'afterhours')">
+              <div class="radio-check"></div> Often
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>What frustrates you most about note-making?</label>
+          <div class="radio-grid">
+            <div class="radio-option" onclick="selectRadio(this, 'frustration')">
+              <div class="radio-check"></div> Time consumption
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'frustration')">
+              <div class="radio-check"></div> Formatting
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'frustration')">
+              <div class="radio-check"></div> Risk documentation
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'frustration')">
+              <div class="radio-check"></div> Other
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>What concerns you most about AI-assisted documentation?</label>
+          <div class="radio-grid">
+            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+              <div class="radio-check"></div> Loss of clinical nuance
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+              <div class="radio-check"></div> Ethical concerns
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+              <div class="radio-check"></div> Accuracy issues
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+              <div class="radio-check"></div> I have no concerns
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Do you believe AI could ever appropriately assist documentation?</label>
+          <div class="radio-grid">
+            <div class="radio-option" onclick="selectRadio(this, 'aibelief')">
+              <div class="radio-check"></div> Yes
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'aibelief')">
+              <div class="radio-check"></div> No
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'aibelief')">
+              <div class="radio-check"></div> Unsure
+            </div>
+          </div>
+        </div>
+        <button class="btn-form-next" onclick="goToStep(4)">Continue →</button>
+      </div>
+
+      <!-- STEP 4: Stay in Touch -->
+      <div class="form-step" id="step-4">
+        <button class="btn-back" onclick="goToStep(3)">← Back</button>
         <div class="field-group">
           <label>WhatsApp / Phone (for onboarding call) *</label>
           <input type="tel" id="f-phone" placeholder="+91 98765 43210" />
@@ -1103,7 +1172,7 @@
         <h3>You're on the list.</h3>
         <p>We'll reach out personally within 48 hours. Thank you for helping shape ORAII from the ground up — this means
           the world to us.</p>
-        <p style="margin-top: -16px; font-style: italic; color: var(--sage);">"The world breaks you. We heal together."
+        <p style="margin-top: -16px; font-style: italic; color: var(--sage);">"Think freely, document effortlessly."
         </p>
         <div class="share-row" style="margin-top: 32px;">
           <button class="share-btn" onclick="share('linkedin')">Share on LinkedIn</button>
@@ -1117,7 +1186,7 @@
   <!-- FOOTER -->
   <footer>
     <div class="logo">or<span style="font-style:italic; color: rgba(196,121,90,0.7);">A</span>ii</div>
-    <p>The world breaks you. We heal together.</p>
+    <p>Think freely, document effortlessly.</p>
     <p style="color: rgba(255,255,255,0.25);">© 2025 ORAII · Bengaluru, India</p>
   </footer>
 
@@ -1129,13 +1198,13 @@
     }
 
     // Step navigation
-    const stepLabels = ['Step 1 of 3 — About You', 'Step 2 of 3 — Your Practice', 'Step 3 of 3 — Stay in Touch'];
+    const stepLabels = ['Step 1 of 4 — About You', 'Step 2 of 4 — Your Practice', 'Step 3 of 4 — AI & Documentation', 'Step 4 of 4 — Stay in Touch'];
 
     function goToStep(n) {
       document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
       document.getElementById(`step-${n}`).classList.add('active');
 
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 1; i <= 4; i++) {
         const dot = document.getElementById(`dot-${i}`);
         dot.classList.remove('active', 'done');
         if (i < n) dot.classList.add('done');
@@ -1171,6 +1240,10 @@
         docsTime: getSelected('docs'),
         painPoint: document.getElementById('f-pain').value,
         willingness: getSelected('pay'),
+        notesAfterHours: getSelected('afterhours'),
+        noteFrustration: getSelected('frustration'),
+        aiConcern: getSelected('aiconcern'),
+        aiBelief: getSelected('aibelief'),
         phone: phone,
         email: email,
         callPref: getSelected('call'),
