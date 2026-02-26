@@ -291,15 +291,20 @@
       .proof-strip {
         display: flex;
         flex-direction: row;
-        gap: 32px;
+        flex-wrap: wrap;
+        gap: 16px 32px;
         align-items: center;
+        justify-content: center;
         padding: 20px 48px;
+        overflow: hidden;
       }
 
       .proof-item {
-        white-space: nowrap;
-        font-size: 0.85rem;
+        white-space: normal;
+        font-size: 0.82rem;
         align-items: center;
+        flex-shrink: 1;
+        min-width: 0;
       }
 
       .proof-item strong {
@@ -312,6 +317,17 @@
         height: 16px;
         background: rgba(255, 255, 255, 0.15);
         flex-shrink: 0;
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .proof-strip {
+        flex-wrap: nowrap;
+      }
+
+      .proof-item {
+        white-space: nowrap;
+        font-size: 0.85rem;
       }
     }
 
