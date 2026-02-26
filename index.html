@@ -261,32 +261,58 @@
 
     /* PROOF STRIP */
     .proof-strip {
-      background: var(--ink);
-      padding: 20px 48px;
-      display: flex;
-      gap: 48px;
-      align-items: center;
-      overflow: hidden;
+      background: #1a1a2e;
+      padding: 24px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
     .proof-item {
-      white-space: nowrap;
       color: rgba(255, 255, 255, 0.6);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
+      line-height: 1.5;
+      white-space: normal;
     }
 
     .proof-item strong {
       color: rgba(255, 255, 255, 0.9);
+      display: block;
     }
 
     .divider {
-      width: 1px;
-      height: 16px;
-      background: rgba(255, 255, 255, 0.15);
-      flex-shrink: 0;
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .proof-strip {
+        display: flex;
+        flex-direction: row;
+        gap: 32px;
+        align-items: center;
+        padding: 20px 48px;
+      }
+
+      .proof-item {
+        white-space: nowrap;
+        font-size: 0.85rem;
+        align-items: center;
+      }
+
+      .proof-item strong {
+        display: inline;
+      }
+
+      .divider {
+        display: block;
+        width: 1px;
+        height: 16px;
+        background: rgba(255, 255, 255, 0.15);
+        flex-shrink: 0;
+      }
     }
 
     /* PROBLEM SECTION */
@@ -802,11 +828,7 @@
         gap: 20px;
       }
 
-      .proof-strip {
-        gap: 24px;
-        flex-wrap: wrap;
-        padding: 20px 24px;
-      }
+
     }
   </style>
 </head>
