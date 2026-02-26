@@ -1094,13 +1094,13 @@
         <div class="field-group">
           <label>How often do you work on notes outside working hours?</label>
           <div class="radio-grid">
-            <div class="radio-option" onclick="selectRadio(this, 'afterhours')">
+            <div class="radio-option" onclick="selectRadio(this, 'overtime')">
               <div class="radio-check"></div> Never
             </div>
-            <div class="radio-option" onclick="selectRadio(this, 'afterhours')">
+            <div class="radio-option" onclick="selectRadio(this, 'overtime')">
               <div class="radio-check"></div> Sometimes
             </div>
-            <div class="radio-option" onclick="selectRadio(this, 'afterhours')">
+            <div class="radio-option" onclick="selectRadio(this, 'overtime')">
               <div class="radio-check"></div> Often
             </div>
           </div>
@@ -1125,16 +1125,16 @@
         <div class="field-group">
           <label>What concerns you most about AI-assisted documentation?</label>
           <div class="radio-grid">
-            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+            <div class="radio-option" onclick="selectRadio(this, 'concern')">
               <div class="radio-check"></div> Loss of clinical nuance
             </div>
-            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+            <div class="radio-option" onclick="selectRadio(this, 'concern')">
               <div class="radio-check"></div> Ethical concerns
             </div>
-            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+            <div class="radio-option" onclick="selectRadio(this, 'concern')">
               <div class="radio-check"></div> Accuracy issues
             </div>
-            <div class="radio-option" onclick="selectRadio(this, 'aiconcern')">
+            <div class="radio-option" onclick="selectRadio(this, 'concern')">
               <div class="radio-check"></div> I have no concerns
             </div>
           </div>
@@ -1216,19 +1216,26 @@
   </footer>
 
   <script>
-    // Radio selection
+    // Store all radio selections in memory — not DOM-dependent
+    const selections = {};
+    let submitted = false;
+
     function selectRadio(el, group) {
-      document.querySelectorAll(`.radio-option[onclick*="${group}"]`).forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll(`.radio-option[onclick*="'${group}'"]`).forEach(o => o.classList.remove('selected'));
       el.classList.add('selected');
+      selections[group] = el.innerText.trim();
     }
 
-    // Step navigation
-    const stepLabels = ['Step 1 of 4 — About You', 'Step 2 of 4 — Your Practice', 'Step 3 of 4 — AI & Documentation', 'Step 4 of 4 — Stay in Touch'];
+    const stepLabels = [
+      'Step 1 of 4 — About You',
+      'Step 2 of 4 — Your Practice',
+      'Step 3 of 4 — AI & Documentation',
+      'Step 4 of 4 — Stay in Touch'
+    ];
 
     function goToStep(n) {
       document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
       document.getElementById(`step-${n}`).classList.add('active');
-
       for (let i = 1; i <= 4; i++) {
         const dot = document.getElementById(`dot-${i}`);
         dot.classList.remove('active', 'done');
@@ -1239,16 +1246,10 @@
       document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Google Sheets Web App URL
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbw58WPW3Wkox2y_Kq_hvb-8xkd17lchzejQqVpjjtaVcZWtQcij0OKSyM_FIy7tMufzxg/exec";
-
-    // Helper — gets the selected radio option text for a group
-    function getSelected(group) {
-      const selected = document.querySelector(`.radio-option.selected[onclick*="${group}"]`);
-      return selected ? selected.innerText.trim() : 'Not answered';
-    }
-
     async function submitForm() {
+      // Prevent double submission
+      if (submitted) return;
+
       const email = document.getElementById('f-email').value;
       const phone = document.getElementById('f-phone').value;
       if (!email || !phone) {
@@ -1256,26 +1257,28 @@
         return;
       }
 
-      // Collect all form data
+      submitted = true;
+
+      const SHEET_URL = "https://script.google.com/macros/s/AKfycbw58WPW3Wkox2y_Kq_hvb-8xkd17lchzejQqVpjjtaVcZWtQcij0OKSyM_FIy7tMufzxg/exec";
+
       const formData = {
         name: document.getElementById('f-name').value,
         city: document.getElementById('f-city').value,
         specialization: document.getElementById('f-spec').value,
-        clients: getSelected('clients'),
-        docsTime: getSelected('docs'),
+        clients: selections['clients'] || 'Not answered',
+        docsTime: selections['docs'] || 'Not answered',
         painPoint: document.getElementById('f-pain').value,
-        willingness: getSelected('pay'),
-        notesAfterHours: getSelected('afterhours'),
-        noteFrustration: getSelected('frustration'),
-        aiConcern: getSelected('aiconcern'),
-        aiBelief: getSelected('aibelief'),
+        willingness: selections['pay'] || 'Not answered',
+        overtime: selections['overtime'] || 'Not answered',
+        frustration: selections['frustration'] || 'Not answered',
+        concern: selections['concern'] || 'Not answered',
+        aibelief: selections['aibelief'] || 'Not answered',
         phone: phone,
         email: email,
-        callPref: getSelected('call'),
+        callPref: selections['call'] || 'Not answered',
         social: document.getElementById('f-social').value
       };
 
-      // Send to Google Sheets
       try {
         await fetch(SHEET_URL, {
           method: "POST",
@@ -1287,7 +1290,6 @@
         console.error("Submission error:", err);
       }
 
-      // Show success screen
       document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
       document.querySelector('.step-indicator').style.display = 'none';
       document.getElementById('success').style.display = 'block';
@@ -1295,21 +1297,19 @@
     }
 
     function share(platform) {
-      const msg = encodeURIComponent("Just joined the ORAII early access list — an AI documentation tool built for Indian therapists. If you're a therapist drowning in notes, check this out: [link]");
+      const msg = encodeURIComponent("Just joined the ORAII early access list — an AI documentation tool built for Indian therapists. If you're a therapist drowning in notes, check this out: https://oraii-survey.vercel.app");
       const urls = {
-        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=https://oraii.in`,
+        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=https://oraii-survey.vercel.app`,
         whatsapp: `https://wa.me/?text=${msg}`,
-        instagram: null
       };
       if (platform === 'instagram') {
-        navigator.clipboard.writeText("Just joined the ORAII early access list — an AI documentation tool built for Indian therapists. If you're a therapist drowning in notes, check this out: oraii.in 🌿 #mentalhealth #therapist #India");
-        alert('Caption copied to clipboard! Paste it in your Instagram bio or story.');
+        navigator.clipboard.writeText("Just joined the ORAII early access list — an AI documentation tool built for Indian therapists. If you're a therapist drowning in notes, check this out: oraii-survey.vercel.app 🌿 #mentalhealth #therapist #India");
+        alert('Caption copied! Paste it in your Instagram bio or story.');
         return;
       }
       window.open(urls[platform], '_blank');
     }
 
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         e.preventDefault();
